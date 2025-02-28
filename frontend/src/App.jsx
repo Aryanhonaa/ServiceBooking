@@ -1,68 +1,115 @@
-import React from 'react'
-import { useState } from 'react'
-import authUserStore from './store/authUserStore';
+import React, { useEffect, useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import userStore from './store/UserStore';
+import Navigation from './components/Navigation';
+import Homepage from './pages/Homepage';
+import AuthPageUser from './pages/AuthPageUser';
+import Footer from './components/Footer';
+import HomepageU from './users/HomepageU';
+import ProfilePage from './users/ProfilePage';
+import ProtectRoute from './middleware/ProtectRoute';
+import ServicePHome from './pages/ServicePHome';
+import Contact from './pages/Contact';
+import HomepageServiceProvider from './serviceProvider/HomepageServiceProvider';
+import Home from './admin/Page/Home';
+import Category from './admin/Page/Category';
+import ServiceProviders from './admin/Page/ServiceProviders';
+import ValidateService from './admin/Page/ValidateService';
+import Contacts from './admin/Page/Contacts';
+import ProfileService from './serviceProvider/ProfileService';
+import Appointment from './serviceProvider/Appointment';
+
 const App = () => {
-  const{signUp}=authUserStore();
-  const[name,setName]=useState('');
-  const[email,setEmail]=useState('');
-  const[password,setPassword]=useState('');
-  const[speciality,setSpeciality]=useState('');
-  const[experience,setExperience]=useState('');
-  const[phone,setPhone]=useState('');
-  const[about,setAbout]=useState('');
-  const[fees,setFees]=useState('');
-  const[address,setAddress]=useState('');
-  const[image1,setImage1]=useState(null);
-  const[image2,setImage2]=useState(null);
-  const[image3,setImage3]=useState(null);
+  const { authUser, checkAuth } = userStore();
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchAuth = async () => {
+      await checkAuth();  // ✅ Wait for authentication check
+      setLoading(false);   // ✅ Only render routes after check
+    };
 
-  const handleImage1Change = (e) => {
-    setImage1(e.target.files[0]);
-  };
+    fetchAuth();
+  }, []);
 
-  const handleImage2Change = (e) => {
-    setImage2(e.target.files[0]);
-  };
+  console.log(authUser);
 
-  const handleImage3Change = (e) => {
-    setImage3(e.target.files[0]);
-  };
-
-  const handleSubmit=()=>{
-    const formData=new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('speciality', speciality);
-    formData.append('experience', experience);
-    formData.append('phone', phone);
-    formData.append('about', about);
-    formData.append('fees', fees);
-    formData.append('address', JSON.stringify(address));
-    formData.append('image1', image1);
-    formData.append('image2', image2);
-    formData.append('image3', image3);
-
-    signUp(formData);
+  // ✅ Show loading indicator while checking authentication
+  if (loading) {
+    return <div>Loading...</div>;
   }
-  return (
-    <form onSubmit={handleSubmit}>
-      <input type='text' value={name} onChange={(e)=>setName(e.target.value)} placeholder='Enter Name'/>
-      <input type='text' value={email} onChange={(e)=>setEmail(e.target.value)} placeholder='Enter Email'/>
-      <input type='password' value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Enter Password'/>
-      <input type='text' value={speciality} onChange={(e)=>setSpeciality(e.target.value)} placeholder='Enter Speciality'/>
-      <input type='text' value={experience} onChange={(e)=>setExperience(e.target.value)} placeholder='Enter Experience'/>
-      <input type='number' value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder='Enter Phone'/>
-      <input type='text' value={about} onChange={(e)=>setAbout(e.target.value)} placeholder='Enter About'/>
-      <input type='text' value={fees} onChange={(e)=>setFees(e.target.value)} placeholder='Enter Fees'/>
-      <input type='text' value={address} onChange={(e)=>setAddress(e.target.value)} placeholder='Enter Address'/>
-      <input type='file' onChange={handleImage1Change} placeholder='Image1' />
-      <input type='file' onChange={handleImage2Change} placeholder='Image2' />
-      <input type='file' onChange={handleImage3Change} placeholder='Image3' />
-      <button type='submit'>Submit</button>
-    </form>
-  )
-}
 
-export default App
+  return (
+    <>
+      <Navigation />
+      <Routes>
+
+      <Route
+          path="/"
+          element={
+            !authUser ? (
+              <Homepage />
+            ) : authUser.role === 'Admin' ? (
+              <Navigate to="/admin" />
+            ) : authUser.role === 'User' ? (
+              <Navigate to="/homepage/user" />
+            ) : (
+              <Navigate to="/homepage/service-provider" />
+            )
+          }
+        />
+
+      {!authUser && (
+          <>
+            
+            <Route path="/auth" element={<AuthPageUser />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/service-provider" element={<ServicePHome />} />
+          </>
+        )}
+       
+       
+
+        {/* Protected Routes */}
+        {authUser?.role === 'User' && (
+          <Route element={<ProtectRoute />}>
+            <Route path='/homepage/user' element={<HomepageU />} />
+            <Route path='/profile/user' element={<ProfilePage />} />
+          </Route>
+        )}
+
+        {authUser?.role === 'ServiceProvider' && (
+          <Route element={<ProtectRoute />}>
+            <Route path='/homepage/service-provider' element={<HomepageServiceProvider />} />
+            <Route path='/profile/service-provider' element={<ProfileService/>}></Route>
+            <Route path='/appointment/service-provider' element={<Appointment/>}></Route>
+          </Route>
+        )}
+
+
+
+{authUser?.role ==='Admin' && (
+  
+  <Route element={<ProtectRoute/>}>
+    
+<Route element={<Home/>} path='/admin'></Route>
+<Route element={<Category/>} path='/admin/category'></Route>
+<Route element={<ServiceProviders/>} path='/admin/service-providers'></Route>
+<Route element={<ValidateService/>} path='/admin/service-providers/details/:data'></Route>
+<Route element={<Contacts/>}  path='/admin/contacts'></Route>
+  </Route>
+
+  
+)}
+
+
+        <Route path='*' element={<div>Page Not Found</div>} />
+      </Routes>
+      <Footer />
+
+      
+    </>
+  );
+};
+
+export default App;

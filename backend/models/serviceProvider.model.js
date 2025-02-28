@@ -3,16 +3,27 @@ const validate=require('validator');
 const bcrypt=require('bcrypt');
 
 const providerSchema= new mongoose.Schema({
-    name:{
+    firstName:{
         type:String,
         required:true
     },
-    email:{
-        type:String,
-        required:true,
-        validator:validate.isEmail,
-        unique:true
+
+    middleName:{
+        type:String
     },
+    lastName:{
+        type:String,
+        required:true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+          validator: (v) => /^([a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4})$/.test(v),
+          message: props => `${props.value} is not a valid email!`
+        }
+      },
     password:{
         type:String,
         required:true,
@@ -20,6 +31,9 @@ const providerSchema= new mongoose.Schema({
     image:{
         type:String,
         required:true,
+    },
+    category:{
+        type:String,
     },
     speciality:{
         type:String,
@@ -31,17 +45,17 @@ const providerSchema= new mongoose.Schema({
     },
     about:{
         type:String,
-        required:true,
+        // required:true,
     },
     available:{
         type:Boolean,
         // required:true
     },
-    phone:{
+    phone:[{
         type:String,
         required:true,
         unique:true
-    },
+    }],
     fees:{
         type:Number,
         required:true
@@ -65,6 +79,10 @@ const providerSchema= new mongoose.Schema({
     citizenB:{
         type:String,
         required:true
+    },
+    role:{
+        type:String,
+        default:"ServiceProvider"
     }
 },{minimize:false, timestamps:true})
 

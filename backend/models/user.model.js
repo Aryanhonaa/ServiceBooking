@@ -5,17 +5,24 @@ const bcrypt =require('bcrypt');
 const userSchema= new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:[true,"Name is required"]
+    },
+    middleName:{
+        type:String
+    },
+    lastName:{
+        type:String,
+        required:[true,"Last Name is required"]
     },
     email:{
         type:String,
-        required:true,
-        validator:validate.isEmail,
+        required:[true,"Email is required"],
+        validate: [validate.isEmail, 'Invalid email address'],
         unique:true
     },
     password:{
         type:String,
-        required:true,
+        required: [true, 'Password is required'],
     },
     image:{
         type:String,
@@ -24,6 +31,7 @@ const userSchema= new mongoose.Schema({
    
     about:{
         type:String,
+        default: '',
     },
    
     address:{
@@ -37,8 +45,19 @@ const userSchema= new mongoose.Schema({
     },
     phone:{
         type:String,
-        required:true,
+        required: [true, 'Phone number is required'],
         unique:true
+    },
+    role:{
+        type:String,
+        default:"User"
+    },
+    isVerifed:{
+        type:Boolean,
+        default:false
+    },
+    verificationCode:{
+        type:String,
     }
    
 },{timestamps:true})
@@ -57,5 +76,5 @@ userSchema.methods.comparePassword=async function (password) {
     
 }
 
-const userModel=mongoose.model('Users',userSchema);
+const userModel=mongoose.model('Customers',userSchema);
 module.exports=userModel;
