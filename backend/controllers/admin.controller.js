@@ -106,7 +106,7 @@ exports.addSpecialityToCategory = async (req, res) => {
 
   try {
     const categoryId=req.params.id;
-    const { specialityName } = req.body;
+    const { specialityName, detail } = req.body;
 
     // Validate that category ID, speciality name, and speciality image are provided
     if (!categoryId || !specialityName || !req.file) {
@@ -138,6 +138,7 @@ exports.addSpecialityToCategory = async (req, res) => {
     const speciality = {
       specialityName: specialityName,
       img: specialityImageUrl,  // Save speciality image URL
+      detail:detail
     };
 
     // Add the new speciality to the category's speciality array
@@ -155,9 +156,11 @@ exports.addSpecialityToCategory = async (req, res) => {
 
 exports.removeSpeciality=async(req,res)=>{
   try{
-    const categoryId= req.params.categoryId;
-    const {specialtyId}= req.body;
+    const {categoryId,specialtyId}= req.params;
+    // const {}= req.body;
 
+    console.log("CATID",categoryId)
+    console.log("SPEID",specialtyId)
     if(!categoryId || !specialtyId){
       return res.status(400).json({message:"Send all requirements", success:false });
     }
@@ -193,6 +196,7 @@ exports.getCategory=async (req,res) => {
         res.status(200).json({
             message:"Categories retrived successfully",
             categories,
+            success:true
            
 
         })
@@ -208,14 +212,18 @@ exports.getCategory=async (req,res) => {
 exports.getSpecialities= async(req,res,next)=>{
   try{
     const {categoryName}=req.params;
-    const category=await categoriesModel.findOne({name:categoryName});
+    console.log("CATE",categoryName)
+    const category = await categoriesModel.findOne({
+      name: { $regex: new RegExp(`^${categoryName}$`, 'i') } // case-insensitive match
+    });
+    
   
   if(!category){
   return res.status(404).json({message:"Category not found",success:false});
   }
   
   const speciality=category.speciality;
-  res.status(200).json(speciality);
+  res.status(200).json({data:speciality, success:true});
 
   }catch(err){
     res.status(500).json({
@@ -423,13 +431,13 @@ exports.addVerifiedService=async(req,res)=>{
     middleName: tempService.middleName,
     lastName: tempService.lastName,
     email: tempService.email.toLowerCase(),
-    password: tempService.password, // Already hashed
+    password: tempService.password, 
     category:tempService.category,
     speciality: tempService.speciality,
-    experience: tempService.experience,
+  
     phone: tempService.phone,
     about: tempService.about,
-    fees: tempService.fees,
+   
     address: tempService.address,
     date: Date.now(),
     image: tempService.image,
@@ -602,5 +610,85 @@ exports.sendTopCategory=async(req,res)=>{
 
   }catch(err){
     res.status(500).json({message:"Error in sendTopCategory", error:err.message, sucess:false})
+  }
+}
+
+
+exports.getAllUsers=async(req,res)=>{
+  try{
+    const getUsers= await userModel.find();
+
+    res.status(200).json({data:getUsers, success:true});
+  }catch(err){
+    res.status(500).json({message:"Error in getAllUsers", error:err.message,})
+  }
+}
+
+exports.getAllProviders=async(req,res)=>{
+  try{
+    const getProvider= await serviceModel.find();
+    res.status(200).json({data:getProvider, success:true});
+
+  }catch(err){
+    res.status(500).json({message:"Error in getAllProviders", error:err.message})
+  }
+}
+
+exports.getCategory=async(req,res)=>{
+  try{
+
+    const getCategory= await categoriesModel.find();
+    res.status(200).json({data: getCategory, success: true});
+  }catch(err){
+    res.status(500).json({message:"Error in getCategory", error:err.message});
+  }
+}
+exports.deleteUser=async(req,res)=>{
+  try{
+    const {id}=req.query;
+
+    if(!id){
+      return res.status(400).json({message: "User ID is required", success: false});
+    }
+
+    const getUser= await userModel.findByIdAndDelete(id);
+
+  res.status(200).json({message:"User Deleted Successfully", success:true});
+  }catch(err){
+    res.status(500).json({message:"Error in deleteUser", error: err.message});
+  }
+}
+
+exports.deleteServiceProvider=async(req,res)=>{
+  try{
+    const {id}=req.query;
+
+    if(!id){
+      return res.status(400).json({message: "User ID is required", success: false});
+    }
+
+    const getServiceProvider= await serviceModel.findByIdAndDelete(id);
+
+  res.status(200).json({message:"User Deleted Successfully", success:true});
+  }catch(err){
+    res.status(500).json({message:"Error in deleteUser", error: err.message});
+  }
+}
+
+exports.getServiceProviderDetail=async(req,res)=>{
+  try{
+    const {id}=req.query;
+
+    if(!id){
+      return res.status(400).json({message: "Service Provider ID is required", success: false});
+    }
+    const serviceProvider = await serviceModel.findById(id);
+    if (!serviceProvider) {
+      return res.status(404).json({ message: "Service Provider not found", success: false });
+    }
+    res.status(200).json({ data: serviceProvider, success: true });
+
+  }catch(err){
+    res.status(500).json({message:"Error in getServiceProviderDetail", error: err.message});
   }
 }

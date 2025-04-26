@@ -147,7 +147,7 @@ const SignupUser = () => {
           {/* Email */}
 <div className=" flex-col flex">
   <label className="text-gray-700 font-semibold">Email:</label>
-  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter Email"  className="mt-1 p-2 border border-gray-300 rounded-md" />
+  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter Email"  className="mt-1 p-2 border border-gray-300 rounded-md"  />
 </div>
           
 <button type="button" onClick={()=>handleEmail(email)}

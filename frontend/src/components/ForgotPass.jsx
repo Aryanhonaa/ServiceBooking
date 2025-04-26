@@ -78,8 +78,13 @@ const ForgotPass = ({ setToggleForgot ,toggleForgot}) => {
       />
     </div>
 
-    <button   className={`bg-blue-600 text-white py-2 px-4 text-sm rounded-md mt-3 ${!email ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleContinue}>Continue</button>
-    <h3 onClick={()=>setToggleForgot(prev =>!toggleForgot)}>Back</h3>
+        <div className=' flex justify-between'>
+
+        <h3 className={`bg-yellow-400 text-white py-2 px-4 text-sm rounded-md mt-3 cursor-pointer`}  onClick={()=>setToggleForgot(prev =>!toggleForgot)}>Back</h3>
+        <button   className={`bg-blue-600 text-white py-2 px-4 text-sm rounded-md mt-3 ${!email ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={handleContinue}>Continue</button>
+       
+        </div>
+  
       </>
     )}
 

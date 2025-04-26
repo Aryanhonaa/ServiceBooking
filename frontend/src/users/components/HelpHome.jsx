@@ -8,20 +8,20 @@ const HelpHome = () => {
     const[open3,setOpen3]=useState(false);
   return (
     <main>
-      <div className='mt-9 m-5'>
+      <div className='mt-9 m-20'>
 
-        <div className={`border border-black  flex py-2 cursor-pointer ${open1 ? "border-red-500":""}`} onClick={()=>{setOpen1((s)=>!s), setOpen2(false),setOpen3(false)}}>
+        <div className={`border border-black  flex py-2 cursor-pointer ${open1 ? "border-yellow-500":""}`} onClick={()=>{setOpen1((s)=>!s), setOpen2(false),setOpen3(false)}}>
         {
             open1 ? (
                 <>
-                <div className=' w-full'>
-                    <div className='flex'>
-                    <FiMinus size={14}  className='mt-1 ml-1 text-red-600'/>
-                    <h1 className=' ml-2 text-rose-500 font-semibold'>Welcome To GharKaam</h1>
+                <div className=' w-full '>
+                    <div className='flex '>
+                    <FiMinus size={14}  className='mt-1 ml-1 text-yellow-600'/>
+                    <h1 className=' ml-2 text-yellow-500 font-semibold font-k2d text-center mb-4'>Welcome To GharKaam</h1>
                     </div>
 
-                   <div className=' border-t-2 border-red-500 w-full  '>
-                    <h1 className=' mt-2 ml-7'>Who we are? <br/>
+                   <div className=' border-t-2 border-yellow-500 w-full  '>
+                    <h1 className=' mt-2 ml-7 font-k2d'>Who we are? <br/>
 
                     GharKaam is one of the leading new and emerging home service booking websites available in .</h1>
                    </div>
@@ -44,11 +44,11 @@ const HelpHome = () => {
                 <>
                 <div className=' w-full'>
                     <div className='flex'>
-                    <FiMinus size={14}  className='mt-1 ml-1 text-red-600'/>
-                    <h1 className=' ml-2 text-rose-500 font-semibold'>What we do ??</h1>
+                    <FiMinus size={14}  className='mt-1 ml-1 text-yello2-600'/>
+                    <h1 className=' ml-2 text-yellow-500 font-semibold font-k2d'>What we do ??</h1>
                     </div>
 
-                   <div className=' border-t-2 border-red-500 w-full  '>
+                   <div className=' border-t-2 border-yellow-500 w-full  font-k2d '>
                     <h1 className=' mt-2 ml-7'>
 
                     We at GharKaam provide an easy to use platform for both service providers and service customers can register their accounts for free.<br/>
@@ -61,7 +61,7 @@ Service customers can register themselves as user and search for their needful s
                 </>
             ):(
                 <>
-                 <FaPlus size={14} className='mt-1 ml-1 '/>
+                 <FaPlus size={14} className='mt-1 ml-1 font-k2d'/>
                  <h1 className=' ml-2' >What we do?</h1>
                 </>
             )
@@ -70,18 +70,18 @@ Service customers can register themselves as user and search for their needful s
         </div>
 
 
-        <div className={`border border-black shadow-xl flex py-2 cursor-pointer ${open3 ? "border-red-500":""}`} onClick={()=>{setOpen3((s)=>!s), setOpen1(false), setOpen2(false)}} >
+        <div className={`border border-black shadow-xl flex py-2 cursor-pointer ${open3 ? "border-yellow-500":""}`} onClick={()=>{setOpen3((s)=>!s), setOpen1(false), setOpen2(false)}} >
         {
             open3 ? (
                 <>
                 <div className=' w-full'>
                     <div className='flex'>
-                    <FiMinus size={14}  className='mt-1 ml-1 text-red-600'/>
-                    <h1 className=' ml-2 text-rose-500 font-semibold'>What choose us??</h1>
+                    <FiMinus size={14}  className='mt-1 ml-1 text-yellow-600'/>
+                    <h1 className=' ml-2 text-yellow-500 font-semibold font-k2d'>What choose us??</h1>
                     </div>
 
-                   <div className=' border-t-2 border-red-500 w-full  '>
-                    <h1 className=' mt-2 ml-7'>
+                   <div className=' border-t-2 border-yellow-500 w-full  '>
+                    <h1 className=' mt-2 ml-7 font-k2d'>
 
                     We are offering an easy to use platform for our service providers such as electricians, carpenters, plumbers, painters, appliance repair technicians etc., to list their services and receive unlimited <br/> direct leads, inquiries and service bookings from our website visitors or service customers for free for life time.
 
@@ -93,7 +93,7 @@ Service customers can register themselves as user and search for their needful s
             ):(
                 <>
                  <FaPlus size={14} className='mt-1 ml-1 '/>
-                 <h1 className=' ml-2'>What we do?</h1>
+                 <h1 className=' ml-2 font-k2d'>What we do?</h1>
                 </>
             )
         }

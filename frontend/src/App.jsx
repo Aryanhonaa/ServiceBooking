@@ -18,6 +18,21 @@ import ValidateService from './admin/Page/ValidateService';
 import Contacts from './admin/Page/Contacts';
 import ProfileService from './serviceProvider/ProfileService';
 import Appointment from './serviceProvider/Appointment';
+import ViewProv from './users/ViewProv';
+import ProvProfile from './users/ProvProfile';
+import Loading from './pages/Loading';
+import Services from './users/Services';
+import ViewUser from './serviceProvider/components/ViewUser';
+import Service from './pages/Service';
+import OngoingAppointmet from './serviceProvider/OngoingAppointmet';
+import Bookings from './users/Bookings';
+import History from './serviceProvider/History';
+import Earning from './serviceProvider/Earning';
+import ViewService from './users/ViewService';
+import Reviews from './serviceProvider/Reviews';
+import Users from './admin/Page/Users';
+import ViewServiceProvider from './admin/Page/ViewServiceProvider';
+import ViewProvider from './admin/Component/ViewProviders';
 
 const App = () => {
   const { authUser, checkAuth } = userStore();
@@ -36,7 +51,7 @@ const App = () => {
 
   // ✅ Show loading indicator while checking authentication
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading/>;
   }
 
   return (
@@ -65,6 +80,7 @@ const App = () => {
             <Route path="/auth" element={<AuthPageUser />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/service-provider" element={<ServicePHome />} />
+            <Route path='/service' element={<Service/>}></Route>
           </>
         )}
        
@@ -75,6 +91,11 @@ const App = () => {
           <Route element={<ProtectRoute />}>
             <Route path='/homepage/user' element={<HomepageU />} />
             <Route path='/profile/user' element={<ProfilePage />} />
+            <Route path='/services' element={<Services/>}></Route>
+            <Route path="/service/providers/:specialityName" element={<ViewProv />} />
+            <Route path='/profile/service-provider/:id' element={<ProvProfile/>}></Route>
+            <Route path='/bookings' element={<Bookings/>}></Route>
+            <Route path='/view-booking-details/:id' element={<ViewService/>}></Route>
           </Route>
         )}
 
@@ -83,6 +104,12 @@ const App = () => {
             <Route path='/homepage/service-provider' element={<HomepageServiceProvider />} />
             <Route path='/profile/service-provider' element={<ProfileService/>}></Route>
             <Route path='/appointment/service-provider' element={<Appointment/>}></Route>
+            <Route path='/appointment/upcoming/service-provider' element={<OngoingAppointmet/>}></Route>
+            <Route path='/user/:id/:name' element={<ViewUser/>}/>
+            <Route path='/history-appointments' element={<History/>}></Route>
+            <Route path='/earnings' element={<Earning/>}></Route>
+            <Route path='/reviews' element={<Reviews/>}></Route>
+
           </Route>
         )}
 
@@ -97,6 +124,9 @@ const App = () => {
 <Route element={<ServiceProviders/>} path='/admin/service-providers'></Route>
 <Route element={<ValidateService/>} path='/admin/service-providers/details/:data'></Route>
 <Route element={<Contacts/>}  path='/admin/contacts'></Route>
+<Route element={<Users/>}  path='/admin/users'></Route>
+<Route element={<ViewServiceProvider/>} path='/admin/view-serviceProvider'></Route>
+<Route element={<ViewProvider/>} path='/admin/view/:id'> </Route>
   </Route>
 
   

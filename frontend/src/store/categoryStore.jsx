@@ -7,8 +7,10 @@ const categoryStore=create((set)=>({
     getCategory:async()=>{
         try{
             const response=await axiosInstance.get('/admin/getCategory');
-            console.log(response.data.categories); 
-            set({categories:response.data.categories});
+            console.log("CATEGORIES",response.data.data); 
+            set({categories:response.data});
+            return response.data.data;
+            
         }catch(err){
             console.log(err);
         }

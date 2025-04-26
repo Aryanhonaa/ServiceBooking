@@ -1,122 +1,153 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../Component/SideBar";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { FaPersonCircleQuestion } from "react-icons/fa6";
+import { FaCheckCircle, FaTimesCircle, FaUserCheck } from "react-icons/fa";
 import { IoMdArrowBack } from "react-icons/io";
 import authUserStore from "../../store/admin";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LuRefreshCw } from "react-icons/lu";
 
 const ServiceProviders = () => {
-    const [step, setStep] = useState(1);
-    const { getTemp } = authUserStore(); // Zustand store function
-    const [tempData, setTempData] = useState([]); // State to store fetched data
-    const navigate=useNavigate();
-
+   
+    const { getTemp } = authUserStore();
+    const [tempData, setTempData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
+        setLoading(true);
         try {
-            const data = await getTemp(); 
+            const data = await getTemp();
             if (data?.success) {
                 setTempData(data.data);
-            } else {
-                console.error("Error fetching data:", data);
             }
         } catch (error) {
             console.error("Fetch error:", error);
+        } finally {
+            setLoading(false);
         }
     }, [getTemp]);
+
     useEffect(() => {
-       
-
         fetchData();
-    }, [fetchData]); // Added dependency
+    }, [fetchData]);
 
+    const handleProfile = (data) => {
+        navigate(`/admin/service-providers/details/${data._id}`);
+    };
 
-    const handleProfile=async(data)=>{
-        try{
-            navigate(`/admin/service-providers/details/${data._id}`)
-        }catch(err){
-            console.log(err)
-        }
-
-    }
+    const handleRefresh = () => {
+        fetchData();
+    };
 
     return (
-        <div className="flex">
+        <div className="flex min-h-screen bg-gray-50">
             <Sidebar />
-            <div className="flex-grow p-6">
-                
-                <h1 className="text-3xl font-bold mt-16">Service Provider</h1>
-
-                <div>
-                    {step === 1 && (
-                        <>
-                            <div>
-                                <div className="flex justify-between mt-16 cursor-pointer" onClick={() => setStep(2)}>
-                                    <div className="bg-stone-600 px-10 py-10 rounded-2xl">
-                                        <FaPersonCircleQuestion className="text-yellow-400 ml-12" size={80} />
-                                        <h1 className="text-white font-semibold">Verify Service Provider</h1>
-                                    </div>
-                                    <div className="bg-stone-600 px-10 py-10 rounded-2xl">
-                                        <FaPersonCircleQuestion className="text-yellow-400 ml-12" size={80} />
-                                        <h1 className="text-white font-semibold">Verify Service Provider</h1>
-                                    </div>
-                                    <div className="bg-stone-600 px-10 py-10 rounded-2xl mr-28">
-                                        <FaPersonCircleQuestion className="text-yellow-400 ml-12" size={80} />
-                                        <h1 className="text-white font-semibold">Verify Service Provider</h1>
-                                    </div>
-                                </div>
-
-                                <FaCheckCircle className="text-green-500" size={30} />
-                                <FaTimesCircle className="text-red-500" size={30} />
-                            </div>
-                        </>
-                    )}
-
-                    {/* Step 2 - Displaying the fetched data */}
-                    {step === 2 && (
-                        <>
-                            <div className="mt-10">
-                            <div className="flex justify-between items-center">
-        <div className="flex items-center">
-            <IoMdArrowBack size={35} onClick={() => setStep(1)} className="cursor-pointer" />
-            <h1 className="font-k2d text-3xl ml-4">Verify Service Provider</h1>
-        </div>
-        <LuRefreshCw className="cursor-pointer mr-20 text-gray-700 hover:animate-spin" size={30} onClick={navigate('/admin/service-providers')}/>
-    </div>
-
-                                {/* Display fetched data */}
-                                <div className="mt-6 p-4 bg-gray-200 rounded-lg shadow-md">
-                                    {tempData.length > 0 ? (
-                                        <table className="w-full border-collapse">
-                                            <thead>
-                                                <tr className="bg-gray-300 text-gray-700 font-semibold">
-                                                    <th className="p-2 border border-gray-400 text-left">#</th>
-                                                    <th className="p-2 border border-gray-400 text-left">Name</th>
-                                                    <th className="p-2 border border-gray-400 text-left">Email</th>
-                                                    <th className="p-2 border border-gray-400 text-left">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {tempData.map((data, index) => (
-                                                    <tr key={data._id} className="bg-white border border-gray-300 cursor-pointer" onClick={()=>handleProfile(data)}>
-                                                        <td className="p-2 border border-gray-400">{index + 1}</td>
-                                                        <td className="p-2 border border-gray-400 font-medium">{data.firstName}</td>
-                                                        <td className="p-2 border border-gray-400 text-blue-600">{data.email}</td>
-                                                        <td className="p-2 border border-gray-400 text-yellow-600 font-medium">{data.validation}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    ) : (
-                                        <p className="text-gray-500">No service providers found.</p>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
+            <div className="flex-grow p-6 md:p-8">
+                {/* Main Header */}
+                <div className="mb-8">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Verify Service Provider </h1>
                 </div>
+
+                {/* Dashboard View */}
+                {/* {step === 1 && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        {[1, 2, 3].map((item) => (
+                            <div 
+                                key={item}
+                                onClick={() => setStep(2)}
+                                className="bg-white rounded-xl shadow-md p-6 cursor-pointer transition-all hover:shadow-lg hover:transform hover:-translate-y-1"
+                            >
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="p-4 bg-blue-100 rounded-full mb-4">
+                                        <FaUserCheck className="text-blue-600" size={32} />
+                                    </div>
+                                    <h2 className="text-lg font-semibold text-gray-700">Verify Service Provider</h2>
+                                    <p className="text-gray-500 mt-2">View and manage pending verifications</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )} */}
+
+                {/* List View */}
+               
+                    <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                        {/* List Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                            <div className="flex items-center">
+                                <button 
+                                    onClick={() => setStep(1)}
+                                    className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+                                >
+                                    <Link
+                                    className=" flex"
+                                    to={'/admin'}>
+                                    <IoMdArrowBack size={24} className="mr-2" />
+                                    <span className="text-lg font-medium">Back to Dashboard</span>
+                                    </Link>
+                                    
+                               
+                                </button>
+                            </div>
+                            <button 
+                                onClick={handleRefresh}
+                                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                                title="Refresh data"
+                            >
+                                <LuRefreshCw size={20} />
+                            </button>
+                        </div>
+
+                        {/* Data Table */}
+                        <div className="overflow-x-auto">
+                            {loading ? (
+                                <div className="p-8 text-center text-gray-500">
+                                    Loading service providers...
+                                </div>
+                            ) : tempData.length > 0 ? (
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verify Provider Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {tempData.map((data, index) => (
+                                            <tr 
+                                                key={data._id} 
+                                                onClick={() => handleProfile(data)}
+                                                className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                            >
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {data.firstName}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">{data.email}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                        ${data.validation === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                                          data.validation === 'approved' ? 'bg-green-100 text-green-800' : 
+                                                          'bg-red-100 text-red-800'}`}>
+                                                        {data.validation}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="p-8 text-center text-gray-500">
+                                    No service providers found.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+            
             </div>
         </div>
     );

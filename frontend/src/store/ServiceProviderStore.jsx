@@ -9,12 +9,14 @@ const serviceP=create((set=>({
     isLogin:true,
     toogleLogin:()=>set((state) => ({ isLogin: !state.isLogin })),
     categories:[],
-    
+    darkMode:false,
+    isDarkMode:()=>set((state)=>({darkMode: !state.darkMode})),
 
     getCategory:async()=>{
         try{
             const res=await axiosInstance.get('admin/getCategory');
             set({categories:res.data.categories});
+            return res.data.data;
 
         }catch(err){
             console.log("Cannot Fetch Error!!",err);
@@ -140,6 +142,136 @@ const serviceP=create((set=>({
       console.log(err);
     }
   },
+
+
+  requestLength: null,
+  pendingRequests: async(providerId)=>{
+    try{
+    const res= await axiosInstance.get(`serviceprovider/get-appointments?providerId=${providerId}`);
+
+    if(res.data.success){
+      set({requestLength:res.data.data.length})
+      return res.data;
+    }else {
+      toast.error("Failed to fetch pending requests!");
+      return { success: false, data: [] }; // Ensure a return value
+    }
+    }catch(err){
+      console.log(err);
+      toast.error("Cannot Fetch Pending Requests!!")
+    }
+  },
+
+  getUserData:async(name,id)=>{
+    try{
+      const res= await axiosInstance.get(`serviceprovider/get-user-data?nameId=${name}&id=${id}`);
+      console.log("res",res.data);
+      if(res.data.success){
+        return res;
+      }else{
+        toast.error("Failed to fetch user data!");
+        return { success: false, data: [] }; 
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+
+  },
+
+  getHistory:async(serviceProviderId, userId)=>{
+    try{
+      const res = await axiosInstance.get(`serviceprovider/get-history/${userId}/${serviceProviderId}`);
+  
+
+      if(res.data.success){
+        return res.data;
+      }
+      
+    }catch(err){
+      console.log(err);
+    }
+  },
+
+  getAccepted:async(serviceProviderId)=>{
+    try{
+      const res=await axiosInstance.get(`serviceprovider/get-accepted-appointment?serviceProvider=${serviceProviderId}`);
+
+      if(res.data.success){
+        return res.data;
+      }
+    }catch(err){
+      console.log(err);
+    }
+  },
+  getAcceptedDetails:async(id)=>{
+    try{
+      const res=await axiosInstance.get(`serviceprovider/get-accepted-appointment-details?appointmentId=${id}`);
+      if(res.data.success){
+        return res.data;
+        }
+    }catch(err){
+      console.log(err);
+    }
+  },
+
+  getCompletedAppoinments:async(id)=>{
+    try{
+      const res= await axiosInstance.get(`serviceprovider/get-completed-appointment?providerId=${id}`);
+      if(res.data.success){
+        return res.data;
+      }
+    }catch(err){
+      console.log(err);
+    }
+  },
+  historyAppointment:async(id)=>{
+    try{
+      const res= await axiosInstance.get(`serviceprovider/history-appointment?providerId=${id}`);
+      if(res.data){
+        console.log("RES",res.data)
+        return res.data;
+        }
+    }catch(err){
+
+    }
+  },
+
+  getReviews:async(id)=>{
+    try{
+      const res= await axiosInstance.get(`serviceprovider/get-reviews?serviceProvider=${id}`);
+      console.log("AAAA",res);
+      if(res.data.success){
+        console.log("RES",res)
+        return res.data;
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+  },
+  sendCertifyData:async(data)=>{
+    try{
+      const res= await axiosInstance.post('serviceprovider/certify-serviceProvider',data);
+      if(res.data.success){
+        return res.data;
+        }
+    }catch(err){
+       console.log(err);
+    }
+  },
+  updatePrice:async(data)=>{
+    try{
+      const res= await axiosInstance.post('serviceprovider/update-price',data);
+
+      if(res.data.success){
+        toast.success("Price Updated Successfully!!");
+        return res.data;
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
     })))
 
 

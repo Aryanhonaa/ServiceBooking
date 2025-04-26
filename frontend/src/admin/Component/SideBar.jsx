@@ -17,6 +17,10 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLogout=()=>{
+    logout(navigate);
+  }
+
   return (
     <div className={`flex ${isOpen ? "w-64" : "w-20"} h-screen bg-gray-800 text-white transition-all duration-300`}>
       <div className="flex flex-col w-full h-full p-4">
@@ -44,7 +48,7 @@ const Sidebar = () => {
           <TbCategory/>
           <span>Category</span>
             </Link>
-          <Link to="/admin/service-providers" className="flex items-center space-x-3 text-lg hover:bg-gray-700 p-3 rounded-md">
+          <Link to='/admin/view-serviceProvider' className="flex items-center space-x-3 text-lg hover:bg-gray-700 p-3 rounded-md">
             <GrUserWorker/>
             <span>Service Provider</span>
           </Link>
@@ -52,11 +56,8 @@ const Sidebar = () => {
             <MdContactPhone/>
             <span>Contact</span>
           </Link>
-          <Link to="/admin/settings" className="flex items-center space-x-3 text-lg hover:bg-gray-700 p-3 rounded-md">
-            <FaCog />
-            <span>Settings</span>
-          </Link>
-          <Link  className="flex items-center space-x-3 text-lg hover:bg-gray-700 p-3 rounded-md" onClick={()=>logout(navigate)}>
+         
+          <Link  className="flex items-center space-x-3 text-lg hover:bg-gray-700 p-3 rounded-md" onClick={handleLogout}>
             <FaSignOutAlt />
              <span >Logout</span>
           </Link>

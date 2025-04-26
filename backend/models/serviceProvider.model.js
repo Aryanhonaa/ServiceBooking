@@ -41,7 +41,7 @@ const providerSchema= new mongoose.Schema({
     },
     experience:{
         type:String,
-        required:true,
+        
     },
     about:{
         type:String,
@@ -58,7 +58,7 @@ const providerSchema= new mongoose.Schema({
     }],
     fees:{
         type:Number,
-        required:true
+        
     },
     address:{
         type:Object, 
@@ -83,6 +83,22 @@ const providerSchema= new mongoose.Schema({
     role:{
         type:String,
         default:"ServiceProvider"
+    },
+    certified:{
+        type:Boolean,
+        default:false
+    },
+    serviceImg:{
+        type:String,
+    },
+    serviceDes:{
+
+    },
+    tags:{
+        type:Array,
+    },
+    pricing:{
+        type:Object,
     }
 },{minimize:false, timestamps:true})
 

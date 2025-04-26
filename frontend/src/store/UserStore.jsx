@@ -16,12 +16,13 @@ const userStore = create((set) => ({
       console.log('Response:', res); // Check response from server
   
       if (res.data.success) {
-        toast.success('SignUp Successful');
+        toast.success('SignUp Successful');  navigate('/auth'); // Change to the correct success route
+
         set({ isLogin: false });
         console.log('Success:', res.data.success);
         console.log('Data:', data);
         // Redirect or handle success
-        navigate('/auth'); // Change to the correct success route
+      
       }
     } catch (err) {
       console.log('Error:', err); // Log full error for debugging
@@ -39,7 +40,7 @@ const userStore = create((set) => ({
       // ✅ Update Zustand store with the authenticated user
       userStore.setState({ authUser: res.data.user });
   
-      toast.success('Logged In', { autoClose: 500 });
+      toast.success('Logged In ', { autoClose: 500 });
   
       // ✅ Wait for state update, then navigate
       setTimeout(() => {
@@ -70,7 +71,7 @@ const userStore = create((set) => ({
         
         userStore.setState({ authUser: res.data.user });
 
-        toast.success('Logged In', { autoClose: 500 });
+        // toast.success('Logged In', { autoClose: 500 });
     
       
       if (res.data.user.role === "ServiceProvider") {
@@ -89,7 +90,7 @@ const userStore = create((set) => ({
         return res.data;    
 
     }catch(err){
-        toast.error("Something went wrong! Please try again.");
+      toast.error(err.response?.data?.message || "Invalid Credentials.");
         console.log("Error!!",err);
 
     }
@@ -228,7 +229,101 @@ const userStore = create((set) => ({
   }catch(err){
     console.log(err);
   }
- }
+ },
+ getBookings:async(userId)=>{
+  try{  
+    const res= await axiosInstance.get(`/users/get-bookings?userId=${userId}`);
+    return res.data
+    console.log(res.data);
+  }catch(err){
+  console.log(err);
+  }
+ },
+
+ getDetails:async(id)=>{
+  try{
+    const res= await axiosInstance.get(`/users/get-booking-detail?id=${id}`);
+
+    if(res.data.success){
+      console.log(res);
+      return res.data;
+    }
+  }catch(err){  
+    console.log(err);
+  }
+ },
+
+ getProviderDetails:async(Id)=>{
+  try{
+    const res= await axiosInstance.get(`/users/get-provider-details?id=${Id}`);
+    
+    if(res.data.success){
+      console.log("RESD ASD",res.data)
+      return res.data;
+    }
+  }catch(err){
+    console.log(err);
+  }
+ },
+ sendReviews: async (data) => {
+  try {
+    console.log("SENDING DATA", data);
+    const res = await axiosInstance.post('/users/send-reviews', data);
+
+    if (res.data.success) {
+      toast.success("Review submitted successfully!");
+      console.log(res.data);
+    } else {
+      // If success is false but no error thrown
+      toast.error(res.data.message || "Something went wrong.");
+    }
+  } catch (err) {
+    // Handle known errors
+    if (err.response) {
+      const { status, data } = err.response;
+
+      if (status === 300) {
+        toast.error("You have already submitted a review for this booking.");
+      } else if (status === 400) {
+        toast.error(data?.msg || "Please fill in all required fields.");
+      } else {
+        toast.error(data?.msg || "Server error occurred.");
+      }
+
+      console.error("SERVER ERROR:", err.response.data);
+    } else {
+      // Handle unknown errors
+      toast.error("Something went wrong. Please try again.");
+      console.error("CLIENT ERROR:", err);
+    }
+  }
+},
+
+getReviews:async(id)=>{
+  try{
+    const res= await axiosInstance.get(`users/get-reviews?serviceProvider=${id}`);
+
+    if(res.data.success){
+      console.log("RESD ASD",res.data)
+      return res.data;
+    }
+
+  }catch(err){
+    console.log(err)
+  }
+},
+cancelAppointment:async(cancelData)=>{
+  try{
+    const res= await axiosInstance.post('users/cancel-appointment',cancelData);
+    console.log("CANCELAPPOINT<ENT",res);
+      
+   
+
+  }catch(Err){
+    console.log(Err);
+  }
+}
+
   
 }));
 

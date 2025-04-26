@@ -20,7 +20,7 @@ router.post('/add-specialty/:id', upload.single("specialityImage"), categoriesCo
 router.post('/top-category',upload.single('img'),categoriesController.topCategory);
 router.get('/get-topCategory',categoriesController.sendTopCategory);
 
-router.delete('/remove-speciality/:categoryId',categoriesController.removeSpeciality);
+router.delete('/remove-speciality/:categoryId/:specialtyId',categoriesController.removeSpeciality);
 router.get('/getCategory',categoriesController.getCategory);
 router.get('/specialities/:categoryName',categoriesController.getSpecialities);
 
@@ -41,6 +41,16 @@ router.get('/me',protectRoute,(req,res)=>{
       success:true,
       user:req.user
   })
-
 })
+
+router.get('/get-users',categoriesController.getAllUsers);
+
+router.get('/get-serviceProvider',categoriesController.getAllProviders);
+
+router.get('/get-category',categoriesController.getCategory);
+
+router.delete('/delete-user',categoriesController.deleteUser);
+router.delete('/delete-serviceProvider',categoriesController.deleteServiceProvider);
+
+router.get('/get-detail-service-provider',categoriesController.getServiceProviderDetail);
 module.exports=router;

@@ -28,7 +28,7 @@ const SignUpForm = () => {
 
   // Step 4: Speciality & Experience
   const [speciality, setSpeciality] = useState('');
-  const [experience, setExperience] = useState('');
+
   const [filteredSpecialities, setFilteredSpecialities] = useState([]);
 
   // Step 3: Personal Details & Images
@@ -37,7 +37,7 @@ const SignUpForm = () => {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [about, setAbout] = useState('');
-  const [fees, setFees] = useState('');
+  
   const [address, setAddress] = useState({ street: '', city: '', country: '' ,lat:"", lng:""});
   const [image1, setImage1] = useState(null);
   const [image2, setImage2] = useState(null);
@@ -48,15 +48,15 @@ const SignUpForm = () => {
 const[confirm, setConfirm]=useState("");
   // Fetch Categories and Specialities
   useEffect(() => {
-    getCategory();
+    const getData=async()=>{
+      const res= await  getCategory();
+      setCategory(res);
+    } 
+    getData()
+   
   }, []);
 
-  useEffect(() => {
-    if (categories && categories.length > 0) {
-      setCategory(categories);
-    }
-  }, [categories]);
-
+  
   console.log(categories);
   // Fetch Specialities when a category is selected
   // const handleCategoryChange = async (e) => {
@@ -80,9 +80,9 @@ const[confirm, setConfirm]=useState("");
   
       // Fetch specialities directly using the `name` parameter
       const { data } = await axiosInstance.get(`admin/specialities/${name}`);
-      setFilteredSpecialities(data);
+      setFilteredSpecialities(data.data);
 
-      setStep(4)
+      setStep(4).
   
       console.log("Selected Category:", name); // Debugging
       console.log("Fetched Specialities:", data); // Debugging
@@ -111,10 +111,10 @@ const[confirm, setConfirm]=useState("");
     formData.append('email', email);
     formData.append('password', password);
     formData.append('speciality', speciality);
-    formData.append('experience', experience);
+    
     formData.append('phone', phone);
     formData.append('about', about);
-    formData.append('fees', fees);
+    
     formData.append('category',selectedCategory);
     formData.append('address', JSON.stringify(address)); // Send the address as an object
     formData.append('image1', image1);
@@ -138,7 +138,7 @@ const[confirm, setConfirm]=useState("");
   };
 
   const handleNext2=()=>{
-    if(!speciality || !experience){
+    if(!speciality ){
       toast.error("Please Enter All Credentials",{
         autoClose:500,
         position:"top-center"
@@ -193,7 +193,7 @@ const[confirm, setConfirm]=useState("");
 
    
     const handleNext4=()=>{
-      if(!fees || !address){
+      if( !address){
         toast.error("Please Provide All Credentials",{
           autoClose:500,
           position:"top-center"
@@ -348,7 +348,7 @@ const[confirm, setConfirm]=useState("");
 
       {step === 4 && (
         <>
-          <h2 className=' font-bold mt-6'> Step 2: Speciality & Experience</h2>
+          <h2 className=' font-bold mt-6'> Step 2: Speciality </h2>
           
           <div className=' mt-6 flex flex-col'>
             <h2 className=' font-semibold'>Category:<span className=' underline ml-6'>{selectedCategory}</span></h2>
@@ -374,15 +374,12 @@ const[confirm, setConfirm]=useState("");
     <h1>Selected Speciality: <span className=' underline text-red-500 font-semibold'>{speciality}</span></h1>
           <br />
 
-          <div className='flex flex-col'>
-          <label>Experience:</label>
-          <input type="text" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Enter Experience (in year)" className='mt-1 p-2 border border-gray-300 rounded-md' />
-          </div>
+         
          
           <br />
           <div className=' flex justify-between mt-7 text-white '>
           <button type="button" onClick={() => setStep(3)} className=' cursor-pointer  bg-gray-500  py-1 px-3 rounded-md '>Back</button>
-          <button type="button" onClick={handleNext2}   className={`bg-blue-600 text-white py-1 px-3 rounded-md ${!speciality || !experience? 'opacity-50 cursor-not-allowed' : ''}`}
+          <button type="button" onClick={handleNext2}   className={`bg-blue-600 text-white py-1 px-3 rounded-md ${!speciality ? 'opacity-50 cursor-not-allowed' : ''}`}
           >Next</button>
           </div>
           
@@ -479,16 +476,9 @@ const[confirm, setConfirm]=useState("");
 
 {step === 6 && (
   <>
-    <h2 className="font-bold mt-6">Step 4: Fees & Address</h2>
+    <h2 className="font-bold mt-6">Step 4:  Address</h2>
     <div className="mt-5 flex flex-col space-y-4">
-      <label>Fees:</label>
-      <input
-        type="text"
-        value={fees}
-        onChange={(e) => setFees(e.target.value)}
-        placeholder="Enter Fees (in rupees)"
-        className="mt-1 p-2 border border-gray-300 rounded-md"
-      />
+      
       <label>Address:</label>
       <input
         type="text"
@@ -510,7 +500,7 @@ const[confirm, setConfirm]=useState("");
       <button
         onClick={handleNext4}
         
-        className={`bg-blue-600 text-white py-1 px-3 rounded-md ${!fees || !address.street ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`bg-blue-600 text-white py-1 px-3 rounded-md ${ !address.street ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         Next
       </button>

@@ -7,6 +7,7 @@ const AddCategory = () => {
     const [categoryImage, setCategoryImage] = useState(null);
     const [specialityImg, setSpecialityImg] = useState("");
     const [specialityName, setSpecialityName] = useState("");
+    const [detail,setDetail]=useState("");
     const { addCategory } = authUserStore();
     const [isModalVisible, setIsModalVisible] = useState(false); // State to control modal visibility
 

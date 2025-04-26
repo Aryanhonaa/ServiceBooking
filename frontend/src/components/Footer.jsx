@@ -7,9 +7,12 @@ import { CiInstagram } from "react-icons/ci";
 import { FaXTwitter } from "react-icons/fa6";
 import userStore from '../store/UserStore';
 import { Link } from 'react-router-dom';
+import serviceP from '../store/ServiceProviderStore';
 const Footer = () => {
     const {authUser}=userStore();
     const date = new Date().getFullYear();
+
+    const {darkMode}=serviceP();
 
   return (
     <footer>
@@ -113,7 +116,9 @@ const Footer = () => {
       )}
       {authUser?.role ==="ServiceProvider" &&(
         <>
-        <div className='bg-[#BB9753] p-3 flex gap-44 text-white'>
+        <div 
+        className={`${darkMode ? " bg-gray-800 bg- p-3 flex gap-44 text-white": "bg-gray-500 p-3 flex gap-44 text-white"}`}
+        >
         <div className=' ml-28'>
             <h1 className=' font-semibold'>Account</h1>
             <h3>My Account</h3>
@@ -155,7 +160,9 @@ const Footer = () => {
         </div>
       </div>
 
-      <h1 className='bg-[#BB9753] text-white text-center text-1xl'>&copy; {date} GharKaam. All rights reserved.</h1>
+      <h1
+       className={`${darkMode ? " bg-gray-800  text-white text-center text-1xl": " bg-gray-500 text-white text-center text-1xl"}`}
+       >&copy; {date} GharKaam. All rights reserved.</h1>
         
         </>
       )}

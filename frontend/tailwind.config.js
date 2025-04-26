@@ -8,7 +8,8 @@ export default {
     extend: {
       fontFamily:{
         kings:['Kings','serif'],
-        k2d:['k2d','serif']
+        k2d:['k2d','serif'],
+        robotoCondensed: ['"Roboto Condensed"', 'sans-serif']
       }
     },
   },

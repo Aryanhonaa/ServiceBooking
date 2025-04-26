@@ -16,7 +16,6 @@ const EditProfile = ({step, setStep}) => {
   const[ dialog, setDialog]=useState(false);
   const{updateProfile}=serviceP();
 
-  // Function to add a new phone number
   const addPhoneNumber = () => {
     if (phoneNumbers.length < 3) {
       setPhoneNumbers([...phoneNumbers, ""]);
@@ -24,22 +23,22 @@ const EditProfile = ({step, setStep}) => {
   };
 
   const updatePhoneNumber = (index, value) => {
-    // Remove any non-digit characters
+   
     const cleanedValue = value.replace(/\D/g, '');
   
-    // Ensure the phone number starts with '9' and has exactly 10 digits
+   
     if (cleanedValue.length === 0) {
-      return; // Do nothing if the input is empty
+      return; 
     }
   
-    // Check if the first character is '9' and the length is 10 digits
+    
     if (cleanedValue[0] !== '9') {
-      toast.error('Phone number must start with 9');  // Show error if it doesn't start with 9
+      toast.error('Phone number must start with 9');  
       return;
     }
     
     if (cleanedValue.length > 10) {
-      toast.error('Phone number must be 10 digits long');  // Show error if the length exceeds 10
+      toast.error('Phone number must be 10 digits long');  
       return;
     }
   
@@ -56,16 +55,17 @@ const EditProfile = ({step, setStep}) => {
       const form= new FormData();
 
       form.append('image',image);
-      form.append('phone', JSON.stringify(phoneNumbers)); // Send phone numbers as string array
+      form.append('phone', JSON.stringify(phoneNumbers)); 
       form.append('address',JSON.stringify(address)); 
       await updateProfile(form);
+      setDialog(false);
     }catch(err){
       console.log(err);
       
     }
   }
 
-  // const dp=image?URL.createObjectURL(image):null;
+
   console.log(phoneNumbers);
   console.log(address);
 

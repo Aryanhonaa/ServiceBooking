@@ -1,72 +1,79 @@
-import React from 'react'
-import { Link ,useLocation } from 'react-router-dom';
-import {  FaSignOutAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { RiHome5Line } from "react-icons/ri";
-import { LuUsersRound } from "react-icons/lu";
-import { SlCalender } from "react-icons/sl";
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+// import { RiHome5Line, RiMoneyDollarCircleLine, RiMessage3Line } from 'react-icons/ri';
+import { LuUsersRound } from 'react-icons/lu';
+import { SlCalender } from 'react-icons/sl';
+import { FaStar, FaBars, FaTimes } from 'react-icons/fa';
 import userStore from '../../store/UserStore';
+import serviceP from '../../store/ServiceProviderStore';
+
+import { MdDashboard, MdHistory, MdEventAvailable, MdAttachMoney, MdMessage, MdRateReview, MdPerson } from "react-icons/md";
 
 
 const SideBarS = () => {
-    const {authUser}=userStore();
-    const location = useLocation();
+  const { authUser } = userStore();
+  const { darkMode } = serviceP();
+  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
-    <div className="bg-white w-80 h-screen border-r-2 border-gray-300 shadow-lg">
-    <div className="flex flex-col space-y-6 px-5 py-8">
-      {/* Header Section */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Welcome, {authUser.firstName}!</h1>
-        <img
-          src={authUser.image}
-          alt="User"
-          className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
-        />
-      </div>
-      <h3 className="text-gray-600">{authUser?.speciality}</h3>
+    <div className={`relative h-screen transition-all duration-300 ${isOpen ? "w-64" : "w-20"} md:w-64`}>
+      
+      {/* Sidebar Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="absolute top-5 -right-5 bg-rose-600 text-white p-2 rounded-full shadow-md focus:outline-none md:hidden"
+      >
+        {isOpen ? <FaTimes /> : <FaBars />}
+      </button>
 
-      {/* Navigation Links */}
-      <div className="space-y-3">
-        <Link
-          to="/homepage/service-provider"
-          className={`flex items-center space-x-3 text-lg p-3 rounded-md hover:bg-gray-700 hover:text-white ${
-            location.pathname === '/homepage/service-provider'
-              ? 'bg-gray-700 text-white border-r-4 border-rose-600'
-              : 'text-gray-800'
-          }`}
-        >
-          <RiHome5Line />
-          <span>Dashboard</span>
-        </Link>
+      <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"} h-full shadow-xl border-r transition-all duration-300`}>
+        
+        
+        <div className="flex flex-col items-center py-6">
+          <img
+            src={authUser.image}
+            alt="User"
+            className="w-14 h-14 rounded-full border-2 border-gray-500"
+          />
+          {isOpen && (
+            <>
+              <h1 className="text-lg font-bold mt-2">{authUser.firstName}</h1>
+              <h3 className="text-sm text-gray-400">{authUser?.speciality}</h3>
+            </>
+          )}
+        </div>
 
-        <Link
-          to="/appointment/service-provider"
-          className={`flex items-center space-x-3 text-lg p-3 rounded-md hover:bg-gray-700 hover:text-white ${
-            location.pathname === '/appointment/service-provider'
-              ? 'bg-gray-700 text-white border-r-4 border-rose-600'
-              : 'text-gray-800'
-          }`}
-        >
-          <SlCalender />
-          <span>Appointment</span>
-        </Link>
+        {/* Navigation Links */}
+        <nav className="flex flex-col space-y-2 px-4">
+  <SidebarLink to="/homepage/service-provider" icon={<MdDashboard />} text="Dashboard" isOpen={isOpen} location={location} />
+  <SidebarLink to="/appointment/service-provider" icon={<MdEventAvailable />} text="Pending Appointments" isOpen={isOpen} location={location} />
+  <SidebarLink to="/appointment/upcoming/service-provider" icon={<MdEventAvailable />} text="Appointments" isOpen={isOpen} location={location} />
+  <SidebarLink to="/history-appointments" icon={<MdHistory />} text="Appointment History" isOpen={isOpen} location={location} />
+  <SidebarLink to="/earnings" icon={<MdAttachMoney />} text="Earnings" isOpen={isOpen} location={location} />
+  <SidebarLink to="/reviews" icon={<MdRateReview />} text="Reviews" isOpen={isOpen} location={location} />
+  <SidebarLink to="/profile/service-provider" icon={<MdPerson />} text="Profile" isOpen={isOpen} location={location} />
+</nav>
 
-        <Link
-          to="/profile/service-provider"
-          className={`flex items-center space-x-3 text-lg p-3 rounded-md hover:bg-gray-700 hover:text-white ${
-            location.pathname === '/profile/service-provider'
-              ? 'bg-gray-700 text-white border-r-4 border-rose-600'
-              : 'text-gray-800'
-          }`}
-        >
-          <LuUsersRound />
-          <span>Profile</span>
-        </Link>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
+const SidebarLink = ({ to, icon, text, isOpen, location }) => {
+  const {darkMode}= serviceP();
+  const isActive = location.pathname === to;
+  return (
+    <Link
+      to={to}
+      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ease-in-out ${
+        isActive ? "bg-yellow-500 text-white shadow-md" : "hover:bg-gray-200 dark:hover:bg-gray-800"
+      } ${darkMode ?"text-lg " :" text-lg hover:text-white"}`}
+    >
+      <span className="text-xl">{icon}</span>
+      {isOpen && <span className={`${darkMode ?"text-lg " :" text-lg hover:text-white"}`}>{text}</span>}
+    </Link>
+  );
+};
 
 export default SideBarS;

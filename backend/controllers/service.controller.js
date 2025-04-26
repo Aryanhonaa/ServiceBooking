@@ -7,6 +7,8 @@ const TempUserModel= require('../models/TempUser.model');
 const nodemailer=require('nodemailer');
 const TempServiceModel=require('../models/tempService.modal');
 const bcrypt= require('bcrypt');
+const appointmentModel = require('../models/appointments');
+
 const signToken=(id)=>{
   return jwt.sign({id},process.env.JWT_SECRET,{
     expiresIn:'7d',
@@ -23,7 +25,7 @@ const transporter= nodemailer.createTransport({
 })
 exports.addProvider = async (req, res) => {
   try {
-    const { firstName,middleName, lastName, email, password,category, speciality, experience, phone, about, fees, address } = req.body;
+    const { firstName,middleName, lastName, email, password,category, speciality, phone, about, address } = req.body;
 
     // Check if the service provider already exists
     const serviceP = await serviceModel.findOne({ email });
@@ -75,11 +77,9 @@ exports.addProvider = async (req, res) => {
       password,
       category,
       speciality,
-      experience,
       phone,
       about,
-      fees,
-      address: JSON.parse(address), // Fixed JSON parsing
+      address: JSON.parse(address), 
       date: Date.now(),
       image: image1Upload.secure_url,
       citizenF: image2Upload.secure_url,
@@ -328,7 +328,7 @@ exports.forgotPassword = async (req, res) => {
     let existingUser= await serviceModel.findOne({email});
   
     if(!existingUser){
-      return res.status(404).json({ message: "Email not found" });
+      return res.status(404).json({ message: "Email not found. Create new account" });
     }
       
     // Check if a pending email verification exists
@@ -589,3 +589,102 @@ exports.forgotPassword = async (req, res) => {
     }
   };
   
+
+  exports.sendUserData=async(req,res)=>{
+    try{
+      
+      const {nameId,id}=req.query;
+      console.log(nameId);
+      if(!nameId || !id){
+        return res.status(400).json({message:"Please provide user ID",success:false});
+      }
+
+      const checkUser= await userModel.findById(nameId).select("-password");
+
+      if(!checkUser){
+        return res.status(404).json({message:"User Not Found",success:false});
+      }
+      
+      const appointments= await appointmentModel.findById(id);
+
+      if(!appointments){
+        return res.status(404).json({message:"Appointment Not Found",success:false});
+      }
+      res.status(200).json({message:"Success", data:checkUser,appointment:appointments, success:true});
+    }catch(err){
+      console.error("Error in sendUserData:", err.message);
+    }
+  }
+
+exports.historyAppointment=async(req,res)=>{
+  try{
+    const {providerId}=req.query;
+
+    if(!providerId){
+      return res.status(400).json({message:"Provide provider ID"});
+    }
+
+    const getData= await appointmentModel.find({providerId: providerId});
+
+    if(!getData){
+      return res.status(400).json({message:"No Appointments Found"});
+    }
+
+    res.status(200).json({data:getData, success:true});
+  }catch(err){
+    console.error("Error in history:", err.message);
+    re.status(500).json({messageL:"Error in history", err:err.message})
+  }
+}
+
+exports.ceritfyService=async(req,res)=>{
+  try{
+    const {description, tags,id,pricing, experience}=req.body;
+    const image=req.file;
+
+    let imageUpload;
+    try{
+      imageUpload= await cloudinary.uploader.upload(image.path,{resource_type:'image'});
+      console.log("Image Uploaded To Cloudinary");
+    }catch(err){
+      console.error("Error in upload image:", err.message);
+    }
+
+    const getProvider=await serviceModel.findById(id);
+    if(!getProvider){
+      return res.status(404).json({message:"Service Provider Not Found",success:false});
+    }
+
+    const updateData=await serviceModel.findByIdAndUpdate(id,{
+     description:description, tags:tags, serviceImg:imageUpload.secure_url, certified:true,pricing:pricing, experience:experience,
+     certified:true
+    })
+
+   
+    res.status(200).json({message:"Certified User", success:true});
+  }catch(err){
+    console.error("Error in ceritfyService:", err.message);
+    res.status(500).json({message:"Error in  certifyService", success:false})
+  
+  }
+}
+
+
+exports.updatePrice=async(req,res)=>{
+  try{  
+    const {id,pricing}=req.body;
+
+    if(!id || !pricing){
+      return res.status(400).json({message:"Invalid Data", success:false});
+    }
+
+    const updatePricing= await serviceModel.findByIdAndUpdate(id,{
+      pricing:pricing
+    })
+    res.status(200).json({message:"Price Updated", success:true});
+
+  }catch(err){
+    console.error("Error in updatePrice:", err.message);
+    res.status(500).json({message:"Error in updatePrice", success:false})
+  }
+}

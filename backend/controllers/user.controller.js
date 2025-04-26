@@ -6,6 +6,9 @@ const cloudinary=require('../config/cloudinary');
 const nodemailer= require('nodemailer');
 const TempUserModel = require('../models/TempUser.model');
 const bcrypt= require('bcrypt');
+const serviceModel = require('../models/serviceProvider.model');
+const categoriesModel = require('../models/categories');
+const appointmentModel = require('../models/appointments');
 
 
 
@@ -41,7 +44,7 @@ exports.addUser=async(req,res,next)=>{
     
     
 
-        const newUser=new TempUserModel({
+        const newUser=new userModel({
             name,
             middleName,
             lastName,
@@ -64,6 +67,7 @@ exports.addUser=async(req,res,next)=>{
                 message:"Failed to add user",
                 error:err.message
             })
+            console.log(err)
         }
 
     }catch(err){
@@ -130,21 +134,33 @@ exports.logout=async (req,res) => {
         })
     }
 };
+
 exports.updateData = async (req, res, next) => {
     try {
-        const { name,about,address,email } = req.body;
+        const { name,about,email } = req.body;
         const image=req.file;
         let   imgUrl="";
+
+        let address= req.body.address;
+
+        try{
+          address= JSON.parse(address);
+        }catch(err){
+          console.log("Address Error",err)
+        }
         if (image) {
-            // Log the received image to check if it's correct
+           
             console.log("Received image:", image);
 
-            // Await the image upload to Cloudinary
             const uploadImg = await cloudinary.uploader.upload(image.path);
             console.log("Cloudinary Response:", uploadImg);
             imgUrl= uploadImg.secure_url;
         }
-        const data={name,about,address,email,image:imgUrl};
+        const data={name,about,address,email};
+
+        if (imgUrl) {
+          data.image = imgUrl; 
+      }
         const updateUser = await userModel.findByIdAndUpdate(req.user.id, data, { new: true });
 
         if (!updateUser) {
@@ -476,3 +492,124 @@ exports.forgotPassword = async (req, res) => {
         res.status(500).json({ message: "Error in changePassword", error: err.message, success:false});
     }
   }
+
+  exports.showUser = async (req, res) => {
+    try {
+      const { specialityName } = req.params;
+  console.log(specialityName)
+      // Query the database to find the service providers for the given specialty
+      const serviceProviders = await serviceModel.find({ speciality:specialityName }).select("-password");
+  
+      // Ensure that no MongoDB-related structures are returned
+      if (!serviceProviders || serviceProviders.length === 0) {
+        return res.status(404).json({ message: `No service providers found for specialty: ${specialityName}`, success: false });
+      }
+  
+      res.status(200).json({ success: true, data: serviceProviders });
+    } catch (err) {
+      res.status(500).json({
+        message: "Error in showUser",
+        error: err.message,
+        success: false,
+      });
+    }
+  };
+  
+
+  exports.profileProvider=async (req,res) => {
+    try{
+      const {id}= req.params;
+
+
+      if(!id){
+        return res.status(404).json({message:"User not found",success:false});
+      }
+
+      const serviceP= await serviceModel.findById({_id:id}).select("-password");
+
+      res.status(200).json({data:serviceP, success:true})
+
+    }catch(err){
+      res.status(500).json({ message: "Error in profileProvider", error: err.message,success:false})
+    } 
+  }
+
+
+  exports.sendSpecialityImg=async(req,res)=>{
+    try{
+      const {name}=req.body;
+      console.log("NAme",name);
+
+      if(!name){
+        return res.status(400).json({message:"Name is required", success:false})
+      }
+
+      const category=await categoriesModel.findOne({"speciality.specialityName":name});
+      
+      if(!category){
+        return res.status(404).json({message:"Category not found", success:false})
+        }
+
+      const speciality=category.speciality.find(
+        (item)=>item.specialityName ===name
+      )
+
+      if(!speciality){
+        return res.status(400).json({message:"Speciality not found"});
+      }
+
+        return res.status(200).json({image:speciality.img});
+     
+    }catch(err){
+      res.status(500).json({ message: "Error in sendSpeciality", error: err})
+    }
+  }
+
+
+  exports.bookingDetails=async(req,res)=>{
+    try{
+      const {id}=req.query;
+
+      if(!id){
+        return res.status(400).json({message:"Id is required", success:false});
+      }
+
+      const findAppointment= await appointmentModel.findById(id);
+
+      if(!findAppointment){
+        return res.status(400).json({message:"No appointment found", success:false});
+      }
+
+      res.status(200).json({data:findAppointment, success:true})
+    }catch(err){
+      res.status(500).json({ message: "Error in bookingDetails", error: err.message});
+    }
+  }
+
+
+  exports.sendProviderDetails=async (req,res) => {
+      try{
+        const {id}=req.query;
+        console.log("ID",id)
+
+        if(!id){
+          return res.status(400).json({message:"Id is required", success:false});
+        }
+
+        const getDetails= await serviceModel.findById(id).select('firstName category email lastName middleName speciality');
+        ;
+
+        if(!getDetails){
+          return res.status(400).json({message:"No service found", success:false});
+        }
+
+        res.status(200).json({success:true, data:getDetails});
+      }catch(err){
+        res.status(500).json({ message: "Error in sendProviderDetails", error: err});
+      }
+  }
+
+
+
+  
+  

@@ -4,6 +4,7 @@ import userStore from '../store/UserStore';
 import { useNavigate } from 'react-router-dom';
 import ForgotPass from './ForgotPass';
 
+
 const LoginUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,11 +68,11 @@ const LoginUser = () => {
     {/* Submit Button */}
     <button
       type="submit"
-      className="w-full mt-6 bg-red-500 text-white font-semibold py-2 rounded-lg transition duration-300 hover:bg-red-600 active:scale-95"
+      className="w-full mt-6 bg-yellow-500 text-white font-semibold py-2 rounded-lg transition duration-300 hover:bg-yellow-600 active:scale-95"
     >
       Sign In
     </button>
-    <h3 className=" mt-3 text-xs underline text-red-500 font-k2d flex justify-end hover:text-black cursor-pointer"
+    <h3 className=" mt-3 text-[12px] font-k2d text-yellow-500 flex justify-end hover:text-yellow-600 cursor-pointer"
     onClick={()=>setToggleForgot(prev =>!toggleForgot)}
     >
 Forgot Password?

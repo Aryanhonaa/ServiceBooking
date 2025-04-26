@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const { trim } = require('validator');
 
 
 const categoriesSchema= new mongoose.Schema({
@@ -8,6 +9,7 @@ const categoriesSchema= new mongoose.Schema({
         {
         specialityName:{type:String, required:true},
         img:{type:String},
+        detail:[{type:String, trim:true}]
         }
     ]
 },{timestamps:true})
